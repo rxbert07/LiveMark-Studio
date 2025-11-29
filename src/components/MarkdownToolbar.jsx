@@ -1,5 +1,24 @@
 import React from 'react';
 
+/**
+ * MarkdownToolbar Component
+ * 
+ * Barra de herramientas para formateo de Markdown con botones interactivos.
+ * 
+ * Características:
+ * - Formato de texto: Negrita, Cursiva, Código inline y bloques
+ * - Encabezados: H1, H2, H3
+ * - Listas y citas
+ * - Inserción de enlaces, imágenes, video y audio
+ * - Tooltips con atajos de teclado
+ * - Soporte para tema claro/oscuro
+ * 
+ * @param {Object} props
+ * @param {React.RefObject} props.textareaRef - Referencia al textarea del editor
+ * @param {Function} props.onUpdate - Callback para actualizar el contenido
+ * @param {string} props.theme - Tema actual ('light' | 'dark')
+ */
+
 export function MarkdownToolbar({ textareaRef, onUpdate, theme }) {
   if (!textareaRef) return null;
 
