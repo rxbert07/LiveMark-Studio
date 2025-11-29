@@ -137,6 +137,14 @@ Empieza escribiendo Markdown aquí.`,
   // Estado para modal de shortcuts
   const [showShortcuts, setShowShortcuts] = useState(false);
 
+  /**
+   * Búsqueda de notas en tiempo real
+   * 
+   * Filtra las notas por título y contenido usando búsqueda case-insensitive.
+   * Se activa automáticamente al escribir en el input de búsqueda.
+   * Atajo de teclado: Ctrl+F para enfocar el campo de búsqueda.
+   */
+
   // Filtrar notas según la búsqueda
   const filteredNotes = notes.filter(note => {
     if (!searchQuery.trim()) return true;
