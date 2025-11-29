@@ -1,5 +1,29 @@
 import { useEffect } from 'react';
 
+/**
+ * useKeyboardShortcuts Hook
+ * 
+ * Hook personalizado para manejar atajos de teclado globales en la aplicación.
+ * 
+ * Atajos disponibles:
+ * - Ctrl+A: Crear nueva nota
+ * - Ctrl+S: Guardar (automático, da feedback visual)
+ * - Ctrl+F: Enfocar búsqueda
+ * - Ctrl+B: Negrita (solo en editor)
+ * - Ctrl+I: Cursiva (solo en editor)
+ * - Ctrl+K: Insertar enlace (solo en editor)
+ * - Ctrl+/: Mostrar ayuda de atajos
+ * 
+ * @param {Object} handlers - Objeto con callbacks para cada atajo
+ * @param {React.RefObject} handlers.textareaRef - Referencia al textarea del editor
+ * @param {Function} handlers.onNewNote - Callback para crear nueva nota
+ * @param {Function} handlers.onSearchFocus - Callback para enfocar búsqueda
+ * @param {Function} handlers.onBold - Callback para aplicar negrita
+ * @param {Function} handlers.onItalic - Callback para aplicar cursiva
+ * @param {Function} handlers.onLink - Callback para insertar enlace
+ * @param {Function} handlers.onShowShortcuts - Callback para mostrar ayuda
+ */
+
 export function useKeyboardShortcuts(handlers) {
     useEffect(() => {
         const handleKeyDown = (e) => {
