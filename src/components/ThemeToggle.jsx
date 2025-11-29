@@ -1,5 +1,22 @@
 import React from 'react';
 
+/**
+ * ThemeToggle Component
+ * 
+ * Botón toggle animado para cambiar entre modo claro y oscuro.
+ * 
+ * Características:
+ * - Animación suave de transición entre temas
+ * - Iconos dinámicos: Sol (modo claro) y Luna (modo oscuro)
+ * - Indicador visual del tema actual
+ * - Accesibilidad con focus ring y título descriptivo
+ * - Persistencia del tema en localStorage (manejado por App.jsx)
+ * 
+ * @param {Object} props
+ * @param {string} props.theme - Tema actual ('light' | 'dark')
+ * @param {Function} props.toggleTheme - Callback para cambiar el tema
+ */
+
 export function ThemeToggle({ theme, toggleTheme }) {
   return (
     <button
