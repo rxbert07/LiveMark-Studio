@@ -123,11 +123,11 @@ ${body}
 
     // Opciones de configuración
     const opt = {
-      margin:       1,
-      filename:     `${title || "nota"}.pdf`,
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true },
-      jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+      margin: 1,
+      filename: `${title || "nota"}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
     };
 
     // Generar PDF
@@ -137,15 +137,17 @@ ${body}
   return (
     <div className="w-1/2 flex flex-col overflow-hidden">
       {/* Barra superior de preview + menú ⋮ */}
-      <div className={`h-10 flex items-center px-3 text-xs border-b justify-between relative ${
-        theme === 'dark' ? 'text-slate-400 border-slate-800 bg-slate-950' : 'text-slate-600 border-slate-200 bg-slate-50'
-      }`}>
+      <div className={`h-10 flex items-center px-3 text-xs border-b justify-between relative ${theme === 'dark' ? 'text-slate-400 border-slate-800 bg-slate-950' : 'text-slate-600 border-slate-200 bg-slate-50'
+        }`}>
         <span>Vista previa</span>
 
         {/* Botón menú ⋮ */}
         <button
           onClick={() => setIsMenuOpen((v) => !v)}
-          className="px-3 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white transition-colors duration-150 flex items-center gap-1 disabled:opacity-40"
+          className={`px-3 py-1.5 rounded-lg border text-xs transition-all duration-200 flex items-center gap-1 font-medium disabled:opacity-40 ${theme === 'dark'
+            ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/30'
+            : 'bg-emerald-50 border-emerald-500/20 text-emerald-700 hover:bg-emerald-100/50 hover:border-emerald-500/30'
+            }`}
           disabled={!content && content !== ""}
           title="Descargar / Exportar"
         >
@@ -156,7 +158,7 @@ ${body}
             viewBox="0 0 24 24"
             strokeWidth={2}
             stroke="currentColor"
-            className="w-5 h-5"
+            className="w-4 h-4"
           >
             <path
               strokeLinecap="round"
@@ -175,7 +177,7 @@ ${body}
             viewBox="0 0 24 24"
             strokeWidth={2}
             stroke="currentColor"
-            className="w-4 h-4"
+            className="w-3.5 h-3.5"
           >
             <path
               strokeLinecap="round"
@@ -190,12 +192,15 @@ ${body}
           <div
             ref={menuRef}
             className={`absolute top-full right-0 mt-1 max-w-[16.875rem]
-           border rounded shadow-lg w-fit min-w-[11.25rem] z-50 text-sm p-2
+           border rounded-lg shadow-xl w-fit min-w-[11.25rem] z-50 text-sm p-1.5
            ${theme === 'dark' ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200 text-slate-800'}
            `}
           >
             <button
-              className="w-full text-left px-3 py-2 hover:text-white hover:bg-emerald-500  transition-colors duration-150 rounded"
+              className={`w-full text-left px-3 py-2 rounded-md transition-colors duration-150 ${theme === 'dark'
+                ? 'hover:bg-emerald-500/10 hover:text-emerald-400'
+                : 'hover:bg-emerald-50 hover:text-emerald-700'
+                }`}
               onClick={() => {
                 downloadTxt();
                 setIsMenuOpen(false);
@@ -204,7 +209,10 @@ ${body}
               Descargar como .txt
             </button>
             <button
-              className="w-full text-left px-3 py-2 hover:text-white hover:bg-emerald-500 transition-colors duration-150 rounded"
+              className={`w-full text-left px-3 py-2 rounded-md transition-colors duration-150 ${theme === 'dark'
+                ? 'hover:bg-emerald-500/10 hover:text-emerald-400'
+                : 'hover:bg-emerald-50 hover:text-emerald-700'
+                }`}
               onClick={() => {
                 downloadMd();
                 setIsMenuOpen(false);
@@ -213,7 +221,10 @@ ${body}
               Descargar como .md
             </button>
             <button
-              className="w-full text-left px-3 py-2 hover:text-white hover:bg-emerald-500 transition-colors duration-150 rounded"
+              className={`w-full text-left px-3 py-2 rounded-md transition-colors duration-150 ${theme === 'dark'
+                ? 'hover:bg-emerald-500/10 hover:text-emerald-400'
+                : 'hover:bg-emerald-50 hover:text-emerald-700'
+                }`}
               onClick={() => {
                 downloadHtml();
                 setIsMenuOpen(false);
@@ -223,7 +234,10 @@ ${body}
             </button>
 
             <button
-              className="w-full text-left px-3 py-2 hover:text-white hover:bg-emerald-500 transition-colors duration-150 rounded"
+              className={`w-full text-left px-3 py-2 rounded-md transition-colors duration-150 ${theme === 'dark'
+                ? 'hover:bg-emerald-500/10 hover:text-emerald-400'
+                : 'hover:bg-emerald-50 hover:text-emerald-700'
+                }`}
               onClick={() => {
                 downloadPdf();
                 setIsMenuOpen(false);
@@ -236,9 +250,8 @@ ${body}
       </div>
 
       {/* Contenido de preview */}
-      <div className={`flex-1 p-4 pb-10 overflow-auto text-sm leading-relaxed ${
-        theme === 'dark' ? '' : 'bg-white'
-      }`}>
+      <div className={`flex-1 p-4 pb-10 overflow-auto text-sm leading-relaxed ${theme === 'dark' ? '' : 'bg-white'
+        }`}>
         <div
           className={`
             [&>h1]:text-3xl [&>h1]:font-bold [&>h1]:mb-4
@@ -255,8 +268,8 @@ ${body}
             [&_code:not(pre_code)]:px-1 [&_code:not(pre_code)]:py-[.0625rem]
             [&_code:not(pre_code)]:rounded [&_code:not(pre_code)]:font-mono
 
-            ${theme === 'dark' 
-              ? '[&>pre]:bg-slate-800 [&>pre]:border-slate-700 [&>pre_code]:text-slate-200 [&_code:not(pre_code)]:bg-slate-800' 
+            ${theme === 'dark'
+              ? '[&>pre]:bg-slate-800 [&>pre]:border-slate-700 [&>pre_code]:text-slate-200 [&_code:not(pre_code)]:bg-slate-800'
               : '[&>pre]:bg-slate-100 [&>pre]:border-slate-200 [&>pre_code]:text-slate-800 [&_code:not(pre_code)]:bg-slate-100'}
           `}
           dangerouslySetInnerHTML={{

@@ -32,7 +32,7 @@ export function MarkdownToolbar({ textareaRef, onUpdate, theme }) {
     const selection = text.substring(start, end);
 
     const newText = text.substring(0, start) + before + selection + after + text.substring(end);
-    
+
     // Actualizar contenido
     onUpdate(newText);
 
@@ -53,22 +53,22 @@ export function MarkdownToolbar({ textareaRef, onUpdate, theme }) {
 
     const start = textarea.selectionStart;
     const text = textarea.value;
-    
+
     // Encontrar el inicio de la línea actual
     let lineStart = text.lastIndexOf('\n', start - 1) + 1;
-    
+
     const newText = text.substring(0, lineStart) + prefix + text.substring(lineStart);
-    
+
     onUpdate(newText);
-    
+
     setTimeout(() => {
       textarea.focus();
       textarea.setSelectionRange(lineStart + prefix.length, lineStart + prefix.length);
     }, 0);
   };
 
-  const toolbarClass = theme === 'dark' 
-    ? 'border-slate-700/50 bg-slate-800/50' 
+  const toolbarClass = theme === 'dark'
+    ? 'border-slate-700/50 bg-slate-800/50'
     : 'border-slate-200 bg-slate-50';
 
   const separatorClass = theme === 'dark'
@@ -84,12 +84,12 @@ export function MarkdownToolbar({ textareaRef, onUpdate, theme }) {
         <IIcon />
       </ToolbarButton>
       <div className={`w-px h-4 mx-1 ${separatorClass}`} />
-      
+
       <ToolbarButton onClick={() => insertBlock('# ')} title="Título 1" theme={theme}>H1</ToolbarButton>
       <ToolbarButton onClick={() => insertBlock('## ')} title="Título 2" theme={theme}>H2</ToolbarButton>
       <ToolbarButton onClick={() => insertBlock('### ')} title="Título 3" theme={theme}>H3</ToolbarButton>
       <div className={`w-px h-4 mx-1 ${separatorClass}`} />
-      
+
       <ToolbarButton onClick={() => insertText('`', '`')} title="Código" theme={theme}>
         <CodeIcon />
       </ToolbarButton>
@@ -97,7 +97,7 @@ export function MarkdownToolbar({ textareaRef, onUpdate, theme }) {
         <CodeBlockIcon />
       </ToolbarButton>
       <div className={`w-px h-4 mx-1 ${separatorClass}`} />
-      
+
       <ToolbarButton onClick={() => insertBlock('- ')} title="Lista" theme={theme}>
         <ListIcon />
       </ToolbarButton>
@@ -105,18 +105,12 @@ export function MarkdownToolbar({ textareaRef, onUpdate, theme }) {
         <QuoteIcon />
       </ToolbarButton>
       <div className={`w-px h-4 mx-1 ${separatorClass}`} />
-      
+
       <ToolbarButton onClick={() => insertText('[', '](url)')} title="Enlace (Ctrl+K)" theme={theme}>
         <LinkIcon />
       </ToolbarButton>
       <ToolbarButton onClick={() => insertText('![', '](url)')} title="Imagen" theme={theme}>
         <ImageIcon />
-      </ToolbarButton>
-      <ToolbarButton onClick={() => insertText('![', '](url)')} title="Video" theme={theme}>
-        <VideoIcon />
-      </ToolbarButton>
-      <ToolbarButton onClick={() => insertText('![', '](url)')} title="Audio" theme={theme}>
-        <AudioIcon />
       </ToolbarButton>
     </div>
   );
@@ -129,8 +123,8 @@ function ToolbarButton({ onClick, children, title, theme }) {
   const [tooltipPos, setTooltipPos] = React.useState({ top: 0, left: 0 });
 
   const btnClass = theme === 'dark'
-    ? 'text-slate-400 hover:text-emerald-400 hover:bg-slate-700/50'
-    : 'text-slate-500 hover:text-emerald-600 hover:bg-slate-200';
+    ? 'text-slate-400 hover:text-emerald-400 hover:bg-emerald-500/10'
+    : 'text-slate-500 hover:text-emerald-600 hover:bg-emerald-50';
 
   const handleMouseEnter = () => {
     if (buttonRef.current) {
@@ -150,27 +144,25 @@ function ToolbarButton({ onClick, children, title, theme }) {
         onClick={onClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={() => setShowTooltip(false)}
-        className={`p-1.5 rounded transition-colors ${btnClass}`}
+        className={`p-1.5 rounded-lg transition-colors ${btnClass}`}
       >
         {children}
       </button>
-      
+
       {/* Fixed Tooltip */}
       {showTooltip && (
         <div
-          className={`fixed px-2 py-1 text-xs rounded whitespace-nowrap pointer-events-none transition-opacity duration-200 z-[9999] -translate-x-1/2 ${
-            theme === 'dark' 
-              ? 'bg-slate-800 text-slate-200 border border-slate-700' 
+          className={`fixed px-2 py-1 text-xs rounded whitespace-nowrap pointer-events-none transition-opacity duration-200 z-[9999] -translate-x-1/2 ${theme === 'dark'
+              ? 'bg-slate-800 text-slate-200 border border-slate-700'
               : 'bg-slate-700 text-white'
-          }`}
+            }`}
           style={{ top: `${tooltipPos.top}px`, left: `${tooltipPos.left}px` }}
         >
           {title}
           {/* Arrow */}
-          <span 
-            className={`absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent ${
-              theme === 'dark' ? 'border-t-slate-800' : 'border-t-slate-700'
-            }`}
+          <span
+            className={`absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent ${theme === 'dark' ? 'border-t-slate-800' : 'border-t-slate-700'
+              }`}
           ></span>
         </div>
       )}
@@ -211,10 +203,4 @@ const ImageIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
 );
 
-const VideoIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
-);
 
-const AudioIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
-);

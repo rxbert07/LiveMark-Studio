@@ -8,7 +8,6 @@ import { useDragDrop } from "./hooks/useDragDrop";
 import { Sidebar } from "./components/Sidebar";
 import { Editor } from "./components/Editor";
 import { Preview } from "./components/Preview";
-import { Header } from "./components/Header";
 import { DragOverlay } from "./components/DragOverlay";
 import { ShortcutsModal } from "./components/ShortcutsModal";
 import { Modal } from "./components/Modal";
@@ -227,15 +226,15 @@ function App() {
   return (
     <div
       className={`h-screen overflow-hidden flex flex-col relative transition-colors duration-200 ${theme} ${theme === 'dark'
-          ? 'bg-slate-900 text-slate-100'
-          : 'bg-slate-100 text-slate-900'
+        ? 'bg-slate-900 text-slate-100'
+        : 'bg-slate-100 text-slate-900'
         }`}
       {...dragEvents}
     >
       <ShortcutsModal isOpen={showShortcuts} onClose={() => setShowShortcuts(false)} theme={theme} />
       <DragOverlay isDragging={isDraggingFile} theme={theme} />
 
-      <Header theme={theme} toggleTheme={toggleTheme} />
+      {/* Header removed */}
 
       <div className="flex flex-1 overflow-hidden">
         <Sidebar
@@ -256,6 +255,7 @@ function App() {
           clearSelection={() => toggleSelectionMode()} // Or clearSelection from hook if exposed, but toggle handles it
           reorderNotes={reorderNotes}
           theme={theme}
+          toggleTheme={toggleTheme}
           searchInputRef={searchInputRef}
         />
 
@@ -327,15 +327,18 @@ function App() {
             <input
               ref={inputRef}
               type="text"
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 ${theme === 'dark'
+                  ? 'bg-slate-800 border-slate-700 text-slate-100'
+                  : 'bg-white border-slate-300 text-slate-900'
+                }`}
               value={modalConfig.inputValue}
-              onChange={(e) => setModalConfig(prev => ({ ...prev, inputValue: e.target.value }))}
+              onChange={(e) =>
+                setModalConfig((prev) => ({ ...prev, inputValue: e.target.value }))
+              }
               onKeyDown={(e) => {
                 if (e.key === 'Enter') confirmRename();
               }}
-              className={`w-full px-3 py-2 rounded border focus:outline-none focus:ring-2 focus:ring-emerald-500 ${theme === 'dark'
-                  ? 'bg-slate-800 border-slate-700 text-white'
-                  : 'bg-white border-slate-300 text-slate-900'
-                }`}
+              autoFocus
             />
           </div>
         )}

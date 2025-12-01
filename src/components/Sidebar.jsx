@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function Sidebar({
   notes,
@@ -18,6 +19,7 @@ export function Sidebar({
   clearSelection,
   reorderNotes,
   theme,
+  toggleTheme, // Add toggleTheme prop
   searchInputRef // Accepted as prop
 }) {
   const [draggedId, setDraggedId] = useState(null);
@@ -64,6 +66,12 @@ export function Sidebar({
     <aside className={`w-64 border-r flex flex-col relative ${theme === 'dark' ? 'bg-slate-950 border-slate-800' : 'bg-slate-50/50 border-slate-200'
       }`}>
 
+      {/* Header inside Sidebar */}
+      <div className="px-4 pt-4 pb-2 flex items-center justify-between">
+        <h1 className={`font-semibold ${theme === 'dark' ? 'text-slate-100' : 'text-slate-800'}`}>LiveMark Studio</h1>
+        <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+      </div>
+
       <div className="px-4 py-4">
         <div className="relative">
           <input
@@ -72,10 +80,10 @@ export function Sidebar({
             placeholder="Buscar notas..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className={`w-full pl-8 pr-3 py-1.5 text-sm rounded border focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-colors duration-200
+            className={`w-full pl-8 pr-3 py-1.5 text-sm rounded-lg border focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all duration-200
               ${theme === 'dark'
-                ? 'bg-slate-900 border-slate-700 text-slate-200 placeholder-slate-500'
-                : 'bg-white border-slate-200 text-slate-700 placeholder-slate-400'
+                ? 'bg-slate-900 border-slate-700 text-slate-200 placeholder-slate-500 focus:border-emerald-500/50'
+                : 'bg-white border-slate-200 text-slate-700 placeholder-slate-400 focus:border-emerald-500/50'
               }`}
           />
           <svg
@@ -108,17 +116,20 @@ export function Sidebar({
       <div className="px-4 mb-2">
         <button
           onClick={createNote}
-          className="w-full px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-sm text-white transition-colors duration-150 mb-2"
+          className="w-full px-3 py-2.5 rounded-lg bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-sm text-white transition-all duration-200 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 hover:scale-[1.01] active:scale-[0.99] mb-3 font-medium flex items-center justify-center gap-2"
         >
-          + Nueva nota
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+            <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+          </svg>
+          Nueva nota
         </button>
 
         <div className="flex gap-2">
           <button
             onClick={handleOpenFileClick}
-            className={`flex-1 px-2 py-1.5 rounded border text-xs transition-colors duration-150 flex items-center justify-center gap-1 ${theme === 'dark'
-                ? 'border-slate-600 text-slate-200 hover:bg-slate-800 hover:text-white'
-                : 'border-slate-300 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+            className={`flex-1 px-2 py-2 rounded-lg border text-xs transition-all duration-200 flex items-center justify-center gap-1 font-medium ${theme === 'dark'
+              ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/30'
+              : 'bg-emerald-50 border-emerald-500/20 text-emerald-700 hover:bg-emerald-100/50 hover:border-emerald-500/30'
               }`}
           >
             <svg
@@ -134,11 +145,11 @@ export function Sidebar({
 
           <button
             onClick={toggleSelectionMode}
-            className={`flex-1 px-2 py-1.5 rounded border text-xs transition-colors duration-150 flex items-center justify-center gap-1 ${isSelectionMode
-                ? 'bg-emerald-600 border-emerald-600 text-white hover:bg-emerald-500'
-                : theme === 'dark'
-                  ? 'border-slate-600 text-slate-200 hover:bg-slate-800 hover:text-white'
-                  : 'border-slate-300 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+            className={`flex-1 px-2 py-2 rounded-lg border text-xs transition-all duration-200 flex items-center justify-center gap-1 font-medium ${isSelectionMode
+              ? 'bg-emerald-600 border-emerald-600 text-white hover:bg-emerald-500 shadow-sm'
+              : theme === 'dark'
+                ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/30'
+                : 'bg-emerald-50 border-emerald-500/20 text-emerald-700 hover:bg-emerald-100/50 hover:border-emerald-500/30'
               }`}
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
@@ -165,22 +176,22 @@ export function Sidebar({
             onDragLeave={handleDragLeave}
             onDrop={() => !isSelectionMode && handleDrop(note.id)}
             onDragEnd={handleDragEnd}
-            className={`px-3 py-3 border-b cursor-pointer group 
-              flex items-center justify-between transition-all duration-150 relative
+            className={`px-3 py-3 cursor-pointer group 
+              flex items-center justify-between transition-all duration-200 ease-in-out relative mb-1 mx-2 rounded-lg border
               ${theme === 'dark'
-                ? 'border-slate-900 ' + (
+                ? (
                   selectedNotes.includes(note.id)
-                    ? 'bg-emerald-900/30 border-l-4 border-l-emerald-500'
+                    ? 'bg-emerald-900/30 border-emerald-500/50 text-emerald-400'
                     : note.id === currentId
-                      ? 'bg-slate-800'
-                      : 'hover:bg-slate-900 text-slate-400'
+                      ? 'bg-emerald-900/20 border-emerald-500/50 text-emerald-400'
+                      : 'border-transparent text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 hover:translate-x-1'
                 )
-                : 'border-slate-200 ' + (
+                : (
                   selectedNotes.includes(note.id)
-                    ? 'bg-emerald-50 border-l-4 border-l-emerald-500'
+                    ? 'bg-emerald-50 border-emerald-500/50 text-emerald-600'
                     : note.id === currentId
-                      ? 'bg-white shadow-sm'
-                      : 'hover:bg-slate-100 text-slate-600'
+                      ? 'bg-emerald-50 border-emerald-500/50 text-emerald-600'
+                      : 'border-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-900 hover:translate-x-1'
                 )
               }
               ${draggedId === note.id ? "opacity-40 cursor-grabbing" : ""}
@@ -197,7 +208,22 @@ export function Sidebar({
               />
             )}
 
-            <span className="truncate flex-1">{note.title}</span>
+            {/* File Icon */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className={`w-4 h-4 mr-2 ${note.id === currentId || selectedNotes.includes(note.id)
+                ? 'text-inherit'
+                : 'text-slate-500 group-hover:text-inherit'
+                }`}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+            </svg>
+
+            <span className="truncate flex-1 font-medium">{note.title}</span>
             <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
               <button
                 onClick={(e) => {
@@ -249,8 +275,8 @@ export function Sidebar({
 
       {isSelectionMode && selectedNotes.length > 0 && (
         <div className={`absolute bottom-0 left-0 right-0 p-2.5 border-t flex items-center justify-between ${theme === 'dark'
-            ? 'bg-slate-950 border-slate-700'
-            : 'bg-white border-slate-200'
+          ? 'bg-slate-950 border-slate-700'
+          : 'bg-white border-slate-200'
           }`}>
           <span className="text-xs font-medium">
             {selectedNotes.length} seleccionada{selectedNotes.length > 1 ? 's' : ''}
@@ -258,7 +284,7 @@ export function Sidebar({
           <div className="flex gap-1.5">
             <button
               onClick={deleteSelectedNotes}
-              className="px-2.5 py-1 rounded bg-red-600 hover:bg-red-500 text-white text-xs transition-colors duration-150 flex items-center gap-1"
+              className="px-2.5 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs transition-all duration-200 shadow-sm hover:shadow flex items-center gap-1 font-medium"
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
                 <path fillRule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z" clipRule="evenodd" />
@@ -267,9 +293,9 @@ export function Sidebar({
             </button>
             <button
               onClick={clearSelection}
-              className={`px-2.5 py-1 rounded border text-xs transition-colors duration-150 ${theme === 'dark'
-                  ? 'border-slate-600 text-slate-200 hover:bg-slate-800'
-                  : 'border-slate-300 text-slate-600 hover:bg-slate-100'
+              className={`px-2.5 py-1.5 rounded-lg border text-xs transition-all duration-200 font-medium ${theme === 'dark'
+                ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/30'
+                : 'bg-emerald-50 border-emerald-500/20 text-emerald-700 hover:bg-emerald-100/50 hover:border-emerald-500/30'
                 }`}
             >
               Cancelar

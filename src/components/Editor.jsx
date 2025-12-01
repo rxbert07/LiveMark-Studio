@@ -6,14 +6,16 @@ export function Editor({ content, updateContent, textareaRef, theme, copied, han
         <div className={`w-1/2 flex flex-col border-r ${theme === 'dark' ? 'border-slate-800' : 'border-slate-300'
             }`}>
             <div className={`h-10 flex items-center justify-between px-3 text-xs border-b ${theme === 'dark'
-                    ? 'text-slate-400 border-slate-800 bg-slate-950'
-                    : 'text-slate-600 border-slate-200 bg-slate-50'
+                ? 'text-slate-400 border-slate-800 bg-slate-950'
+                : 'text-slate-600 border-slate-200 bg-slate-50'
                 }`}>
                 <p>Editor (Markdown)</p>
                 <button
-                    className="w-fit px-2 py-1 rounded flex items-center justify-center 
-         hover:bg-emerald-500 hover:text-white 
-         transition-colors duration-150 group relative"
+                    className={`w-fit px-2 py-1.5 rounded-lg flex items-center justify-center 
+         transition-all duration-200 group relative ${theme === 'dark'
+                            ? 'bg-emerald-500/5 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/10'
+                            : 'bg-emerald-50 border border-emerald-500/20 text-emerald-700 hover:bg-emerald-100/50'
+                        }`}
                     onClick={handleCopyClick}
                     title={copied ? "Copiado" : "Copiar Markdown al portapapeles"}
                 >
