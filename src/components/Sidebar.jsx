@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { ThemeToggle } from "./ThemeToggle";
+import logo from "../assets/logo.png";
 
 export function Sidebar({
   notes,
@@ -68,7 +69,10 @@ export function Sidebar({
 
       {/* Header inside Sidebar */}
       <div className="px-4 pt-4 pb-2 flex items-center justify-between">
-        <h1 className={`font-semibold ${theme === 'dark' ? 'text-slate-100' : 'text-slate-800'}`}>LiveMark Studio</h1>
+        <div className="flex items-center gap-2">
+          <img src={logo} alt="LiveMark Studio Logo" className="w-6 h-6 object-contain" />
+          <h1 className={`font-semibold ${theme === 'dark' ? 'text-slate-100' : 'text-slate-800'}`}>LiveMark Studio</h1>
+        </div>
         <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
       </div>
 

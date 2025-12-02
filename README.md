@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="src/assets/logo.png" alt="LiveMark Studio Logo" width="120" />
+</div>
+
 # 📝 LiveMark Studio
 
 ![React](https://img.shields.io/badge/React-18.3.1-61DAFB?logo=react&logoColor=white)
@@ -262,6 +266,8 @@ Las contribuciones son bienvenidas. Si deseas mejorar LiveMark Studio:
 3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
 4. Push a la rama (`git push origin feature/AmazingFeature`)
 5. Abre un Pull Request
+
+Consulta nuestra [Guía de Contribución](CONTRIBUTING.md) para más detalles.
 
 ---
 
