@@ -36,7 +36,10 @@ md.renderer.rules.fence = (tokens, idx) => {
 
 export function Preview({ content, title, theme, previewRef }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [viewMode, setViewMode] = useState('full'); // 'full' | 'paper'
   const menuRef = useRef(null);
+  const containerRef = useRef(null);
 
   // 🔹 Cerrar menú dropdown al hacer click fuera
   useEffect(() => {
@@ -58,6 +61,30 @@ export function Preview({ content, title, theme, previewRef }) {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isMenuOpen]);
+
+  // 🔹 Manejar cambios de pantalla completa
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      const isFull = !!document.fullscreenElement;
+      setIsFullscreen(isFull);
+      if (!isFull) setViewMode('full'); // Resetear al salir
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
+  const toggleFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await containerRef.current?.requestFullscreen();
+      } else {
+        await document.exitFullscreen();
+      }
+    } catch (err) {
+      console.error("Error attempting to enable fullscreen:", err);
+    }
+  };
 
   const downloadFile = (
     filename,
@@ -135,9 +162,18 @@ ${body}
   };
 
   return (
-    <div className="flex flex-col overflow-hidden h-full">
+    <div
+      ref={containerRef}
+      className={`relative flex flex-col overflow-hidden h-full transition-colors duration-300 ${isFullscreen
+        ? theme === 'dark' ? 'bg-slate-950' : 'bg-slate-100'
+        : ''
+        }`}
+    >
       {/* Barra superior de preview + menú ⋮ */}
-      <div className={`h-12 flex items-center px-4 border-b justify-between relative select-none ${theme === 'dark' ? 'text-slate-400 border-slate-800 bg-slate-950/50' : 'text-slate-600 border-slate-200 bg-slate-50/50'
+      <div className={`h-12 flex items-center px-4 border-b justify-between absolute top-0 left-0 right-0 z-10 select-none transition-colors duration-300 
+        ${theme === 'dark'
+          ? `text-slate-400 border-slate-800 ${isFullscreen ? 'bg-slate-950/80 backdrop-blur-md' : 'bg-slate-950/80 backdrop-blur-md'}`
+          : `text-slate-600 border-slate-200 ${isFullscreen ? 'bg-slate-50/80 backdrop-blur-md' : 'bg-slate-50/80 backdrop-blur-md'}`
         }`}>
         <div className="flex items-center gap-2">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 opacity-70">
@@ -147,51 +183,105 @@ ${body}
           <span className="text-xs font-medium tracking-wide uppercase opacity-90">Vista previa</span>
         </div>
 
-        {/* Botón menú ⋮ */}
-        <button
-          onClick={() => setIsMenuOpen((v) => !v)}
-          className={`px-3 py-1.5 rounded-lg border text-xs transition-all duration-200 flex items-center gap-1 font-medium disabled:opacity-40 ${theme === 'dark'
-            ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/30'
-            : 'bg-emerald-50 border-emerald-500/20 text-emerald-700 hover:bg-emerald-100/50 hover:border-emerald-500/30'
-            }`}
-          disabled={!content && content !== ""}
-          title="Descargar / Exportar"
-        >
-          {/* Icono de descarga */}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2}
-            stroke="currentColor"
-            className="w-4 h-4"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M4 16.5v1.125c0 .621.504 1.125 
-              1.125 1.125h13.75c.621 0 1.125-.504 
-              1.125-1.125V16.5M7.5 10.5l4.5 4.5m0 
-              0l4.5-4.5m-4.5 4.5V3.75"
-            />
-          </svg>
+        <div className="flex items-center gap-2">
+          {/* Controles de vista (solo en pantalla completa) */}
+          {isFullscreen && (
+            <div className={`flex items-center gap-1 mr-2 pr-2 border-r ${theme === 'dark' ? 'border-slate-700' : 'border-slate-300'}`}>
+              <button
+                onClick={() => setViewMode('full')}
+                className={`p-1.5 rounded-md transition-all ${viewMode === 'full'
+                  ? theme === 'dark' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-100 text-emerald-700'
+                  : 'opacity-50 hover:opacity-100'
+                  }`}
+                title="Vista completa"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                  <rect width="20" height="14" x="2" y="5" rx="2" />
+                  <line x1="2" x2="22" y1="10" y2="10" />
+                </svg>
+              </button>
+              <button
+                onClick={() => setViewMode('paper')}
+                className={`p-1.5 rounded-md transition-all ${viewMode === 'paper'
+                  ? theme === 'dark' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-100 text-emerald-700'
+                  : 'opacity-50 hover:opacity-100'
+                  }`}
+                title="Vista documento"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                  <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                  <polyline points="14 2 14 8 20 8" />
+                </svg>
+              </button>
+            </div>
+          )}
 
-          {/* Flechita hacia abajo */}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2}
-            stroke="currentColor"
-            className="w-3.5 h-3.5"
+          {/* Botón Pantalla Completa */}
+          <button
+            onClick={toggleFullscreen}
+            className={`px-2 py-1.5 rounded-lg border transition-all duration-200 flex items-center justify-center ${theme === 'dark'
+              ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/10'
+              : 'bg-emerald-50 border-emerald-500/20 text-emerald-700 hover:bg-emerald-100/50'
+              }`}
+            title={isFullscreen ? "Salir de pantalla completa" : "Pantalla completa"}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M19 9l-7 7-7-7"
-            />
-          </svg>
-        </button>
+            {isFullscreen ? (
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" />
+              </svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+              </svg>
+            )}
+          </button>
+
+          {/* Botón menú ⋮ */}
+          <button
+            onClick={() => setIsMenuOpen((v) => !v)}
+            className={`px-3 py-1.5 rounded-lg border transition-all duration-200 flex items-center gap-1 font-medium disabled:opacity-40 ${theme === 'dark'
+              ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/10'
+              : 'bg-emerald-50 border-emerald-500/20 text-emerald-700 hover:bg-emerald-100/50'
+              }`}
+            disabled={!content && content !== ""}
+            title="Descargar / Exportar"
+          >
+            {/* Icono de descarga */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              className="w-5 h-5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4 16.5v1.125c0 .621.504 1.125 
+                1.125 1.125h13.75c.621 0 1.125-.504 
+                1.125-1.125V16.5M7.5 10.5l4.5 4.5m0 
+                0l4.5-4.5m-4.5 4.5V3.75"
+              />
+            </svg>
+
+            {/* Flechita hacia abajo */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              className="w-3.5 h-3.5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
+        </div>
 
         {/* Dropdown de acciones */}
         {isMenuOpen && (
@@ -256,12 +346,19 @@ ${body}
       </div>
 
       {/* Contenido de preview */}
-      <div className={`flex-1 p-4 pb-10 overflow-auto text-sm leading-relaxed ${theme === 'dark' ? '' : 'bg-white'
-        }`}
+      <div className={`flex-1 overflow-auto transition-all duration-300 ${isFullscreen && viewMode === 'paper'
+        ? 'pt-20 px-8 pb-8 flex justify-center bg-transparent'
+        : 'pt-16 px-4 pb-10'
+        } ${theme === 'dark' ? '' : isFullscreen ? '' : 'bg-white'}`}
         ref={previewRef}
       >
         <div
-          className={`
+          className={`h-fit
+            transition-all duration-300
+            ${isFullscreen && viewMode === 'paper'
+              ? `max-w-3xl w-full mx-auto shadow-2xl rounded-xl p-12 min-h-[calc(100vh-8rem)] ${theme === 'dark' ? 'bg-slate-900 border border-slate-800' : 'bg-white border border-slate-200'}`
+              : 'w-full max-w-none h-fit'
+            }
             [&>h1]:text-3xl [&>h1]:font-bold [&>h1]:mb-4
             [&>h2]:text-2xl [&>h2]:font-semibold [&>h2]:mt-4 [&>h2]:mb-2
             [&>p]:mb-2
