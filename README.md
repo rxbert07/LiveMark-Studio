@@ -9,9 +9,11 @@
 
 ---
 
-## 👥 Autor
+## 👥 Autores
 
-**Robert** - [GitHub Profile](https://github.com/rxbert07)
+**Robert Rosario** - [GitHub Profile](https://github.com/rxbert07)  
+**Christian Martinez** - [GitHub Profile](https://github.com/christian-zzz)  
+**Josue Bauza** - [GitHub Profile](https://github.com/mbauza3533-maker)
 
 ---
 
@@ -20,7 +22,10 @@
 ### ✍️ Editor Markdown Completo
 - **Vista previa en tiempo real**: Renderizado instantáneo de Markdown mientras escribes
 - **Resaltado de sintaxis**: Soporte para múltiples lenguajes de programación con Highlight.js
-- **Barra de herramientas visual**: Botones interactivos para formato rápido (negrita, cursiva, encabezados, listas, etc.)
+- **Diagramas Mermaid**: Crea diagramas de flujo, secuencia, Gantt y más directamente en tus notas
+- **Fórmulas matemáticas**: Soporte para ecuaciones LaTeX con KaTeX (inline y en bloque)
+- **Tablas mejoradas**: Tablas Markdown con estilos profesionales y responsive
+- **Barra de herramientas visual**: Botones interactivos para formato rápido (negrita, cursiva, encabezados, listas, tablas, etc.)
 - **Tooltips informativos**: Cada botón muestra su atajo de teclado correspondiente
 
 ### ⌨️ Atajos de Teclado
@@ -58,6 +63,7 @@
 - **Contador de palabras y caracteres**: Estadísticas en tiempo real
 - **Interfaz responsive**: Diseño adaptable a diferentes tamaños de pantalla
 - **Sin dependencias de backend**: Funciona completamente en el navegador
+- **🎨 Easter Eggs**: ¡Activa el botón de estrella (⭐) en el sidebar y descubre sorpresas ocultas mientras escribes! Diviértete encontrándolos todos.
 
 ---
 
@@ -181,21 +187,11 @@ livemark-studio/
 ├── public/              # Archivos estáticos
 ├── src/
 │   ├── components/      # Componentes React
-│   │   ├── DragOverlay.jsx        # Overlay para arrastrar y soltar
-│   │   ├── Editor.jsx             # Editor de texto Markdown
-│   │   ├── Header.jsx             # Encabezado de la aplicación
 │   │   ├── MarkdownToolbar.jsx    # Barra de herramientas de formato
-│   │   ├── Modal.jsx              # Componente modal reutilizable
-│   │   ├── Preview.jsx            # Vista previa del Markdown renderizado
-│   │   ├── ShortcutsModal.jsx     # Modal de atajos de teclado
-│   │   ├── Sidebar.jsx            # Barra lateral con lista de notas
-│   │   └── ThemeToggle.jsx        # Toggle de tema claro/oscuro
+│   │   ├── ThemeToggle.jsx        # Toggle de tema claro/oscuro
+│   │   └── Modal.jsx              # Componente modal reutilizable
 │   ├── hooks/           # Custom hooks
-│   │   ├── useDragDrop.js         # Lógica de arrastrar y soltar
-│   │   ├── useHistory.js          # Historial de cambios (undo/redo)
-│   │   ├── useKeyboardShortcuts.js # Hook de atajos de teclado
-│   │   ├── useNotes.js            # Gestión del estado de las notas
-│   │   └── useTheme.js            # Gestión del tema (claro/oscuro)
+│   │   └── useKeyboardShortcuts.js # Hook de atajos de teclado
 │   ├── App.jsx          # Componente principal
 │   ├── main.jsx         # Punto de entrada
 │   └── index.css        # Estilos globales
@@ -219,6 +215,8 @@ livemark-studio/
 | **Highlight.js** | 11.11.1 | Resaltado de sintaxis |
 | **html2pdf.js** | 0.10.2 | Exportación a PDF |
 | **nanoid** | 5.0.9 | Generación de IDs únicos |
+| **Mermaid** | 11.4.1 | Diagramas y gráficos |
+| **KaTeX** | 0.16.11 | Renderizado de fórmulas matemáticas |
 
 ---
 
@@ -272,5 +270,5 @@ Las contribuciones son bienvenidas. Si deseas mejorar LiveMark Studio:
 ---
 
 <div align="center">
-  Hecho con ❤️ por <a href="https://github.com/rxbert07">Robert</a>
+  Hecho con ❤️ por <a href="https://github.com/rxbert07">Robert Rosario</a>, <a href="https://github.com/christian-zzz">Christian Martinez</a> y <a href="https://github.com/mbauza3533-maker">Josue Bauza</a>
 </div>

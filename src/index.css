@@ -2,68 +2,107 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom Scrollbar Styles */
-/* Dark theme scrollbar */
-.dark ::-webkit-scrollbar,
+/* Custom Scrollbar for Dark Mode */
+.dark ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 5px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Custom Scrollbar for Light Mode */
 ::-webkit-scrollbar {
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
 }
 
-.dark ::-webkit-scrollbar-track,
 ::-webkit-scrollbar-track {
-  background: rgb(15 23 42); /* slate-900 */
+  background: #f1f5f9;
 }
 
-.dark ::-webkit-scrollbar-thumb,
 ::-webkit-scrollbar-thumb {
-  background: rgb(51 65 85); /* slate-700 */
-  border-radius: 6px;
-  border: 2px solid rgb(15 23 42); /* slate-900 */
+  background: #cbd5e1;
+  border-radius: 5px;
 }
 
-.dark ::-webkit-scrollbar-thumb:hover,
 ::-webkit-scrollbar-thumb:hover {
-  background: rgb(71 85 105); /* slate-600 */
+  background: #94a3b8;
 }
 
-/* Light theme scrollbar */
-.light ::-webkit-scrollbar {
-  width: 12px;
-  height: 12px;
+/* Estilos base para tablas */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
 }
 
-.light ::-webkit-scrollbar-track {
-  background: rgb(241 245 249); /* slate-100 */
+th,
+td {
+  border: 1px solid;
+  padding: 0.5rem;
+  text-align: left;
 }
 
-.light ::-webkit-scrollbar-thumb {
-  background: rgb(203 213 225); /* slate-300 */
-  border-radius: 6px;
-  border: 2px solid rgb(241 245 249); /* slate-100 */
+/* Rainbow Text Animation */
+.rainbow-text {
+  background: linear-gradient(to right,
+      #ff0000,
+      #ff7f00,
+      #ffff00,
+      #00ff00,
+      #0000ff,
+      #4b0082,
+      #9400d3);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: rainbow 2s linear infinite;
 }
 
-.light ::-webkit-scrollbar-thumb:hover {
-  background: rgb(148 163 184); /* slate-400 */
+@keyframes rainbow {
+  0% {
+    background-position: 0% center;
+  }
+
+  100% {
+    background-position: 200% center;
+  }
 }
 
-/* Firefox scrollbar */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: rgb(51 65 85) rgb(15 23 42); /* dark theme default */
+/* Flash Effect: Fade out de blanco a transparente */
+@keyframes flashFadeOut {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
 }
 
-.light * {
-  scrollbar-color: rgb(203 213 225) rgb(241 245 249); /* light theme */
-}
+/* Chinazo Effect: Fade In (2s) + Fade Out (2s) */
+@keyframes chinazoFade {
+  0% {
+    opacity: 0;
+  }
 
-/* Hide scrollbar for Chrome, Safari and Opera */
-.no-scrollbar::-webkit-scrollbar {
-    display: none;
-}
+  50% {
+    opacity: 1;
+  }
 
-/* Hide scrollbar for IE, Edge and Firefox */
-.no-scrollbar {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+  100% {
+    opacity: 0;
+  }
 }

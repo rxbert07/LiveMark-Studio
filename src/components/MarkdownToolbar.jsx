@@ -120,6 +120,13 @@ export function MarkdownToolbar({ textareaRef, onUpdate, theme, onUndo, onRedo, 
       <ToolbarButton onClick={() => insertText('![', '](url)')} title="Imagen" theme={theme}>
         <ImageIcon />
       </ToolbarButton>
+      <ToolbarButton 
+        onClick={() => insertBlock('| Encabezado 1 | Encabezado 2 |\n| -------- | -------- |\n| Celda 1 | Celda 2 |\n')} 
+        title="Tabla" 
+        theme={theme}
+      >
+        <TableIcon />
+      </ToolbarButton>
     </div>
   );
 }
@@ -220,6 +227,15 @@ const LinkIcon = () => (
 
 const ImageIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+);
+
+const TableIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+    <line x1="3" y1="9" x2="21" y2="9"></line>
+    <line x1="3" y1="15" x2="21" y2="15"></line>
+    <line x1="12" y1="3" x2="12" y2="21"></line>
+  </svg>
 );
 
 
