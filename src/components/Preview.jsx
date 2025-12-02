@@ -34,7 +34,7 @@ md.renderer.rules.fence = (tokens, idx) => {
   `;
 };
 
-export function Preview({ content, title, theme }) {
+export function Preview({ content, title, theme, previewRef }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -135,11 +135,17 @@ ${body}
   };
 
   return (
-    <div className="w-1/2 flex flex-col overflow-hidden">
+    <div className="flex flex-col overflow-hidden h-full">
       {/* Barra superior de preview + menú ⋮ */}
-      <div className={`h-10 flex items-center px-3 text-xs border-b justify-between relative ${theme === 'dark' ? 'text-slate-400 border-slate-800 bg-slate-950' : 'text-slate-600 border-slate-200 bg-slate-50'
+      <div className={`h-12 flex items-center px-4 border-b justify-between relative select-none ${theme === 'dark' ? 'text-slate-400 border-slate-800 bg-slate-950/50' : 'text-slate-600 border-slate-200 bg-slate-50/50'
         }`}>
-        <span>Vista previa</span>
+        <div className="flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 opacity-70">
+            <path d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+            <path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+          </svg>
+          <span className="text-xs font-medium tracking-wide uppercase opacity-90">Vista previa</span>
+        </div>
 
         {/* Botón menú ⋮ */}
         <button
@@ -251,7 +257,9 @@ ${body}
 
       {/* Contenido de preview */}
       <div className={`flex-1 p-4 pb-10 overflow-auto text-sm leading-relaxed ${theme === 'dark' ? '' : 'bg-white'
-        }`}>
+        }`}
+        ref={previewRef}
+      >
         <div
           className={`
             [&>h1]:text-3xl [&>h1]:font-bold [&>h1]:mb-4

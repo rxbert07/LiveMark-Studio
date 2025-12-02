@@ -19,7 +19,7 @@ import React from 'react';
  * @param {string} props.theme - Tema actual ('light' | 'dark')
  */
 
-export function MarkdownToolbar({ textareaRef, onUpdate, theme }) {
+export function MarkdownToolbar({ textareaRef, onUpdate, theme, onUndo, onRedo, canUndo, canRedo }) {
   if (!textareaRef) return null;
 
   const insertText = (before, after = '') => {
@@ -77,6 +77,14 @@ export function MarkdownToolbar({ textareaRef, onUpdate, theme }) {
 
   return (
     <div className={`flex items-center gap-1 p-2 border-b overflow-x-auto ${toolbarClass}`}>
+      <ToolbarButton onClick={onUndo} title="Deshacer (Ctrl+Z)" theme={theme} disabled={!canUndo}>
+        <UndoIcon />
+      </ToolbarButton>
+      <ToolbarButton onClick={onRedo} title="Rehacer (Ctrl+Y)" theme={theme} disabled={!canRedo}>
+        <RedoIcon />
+      </ToolbarButton>
+      <div className={`w-px h-4 mx-1 shrink-0 ${separatorClass}`} />
+
       <ToolbarButton onClick={() => insertText('**', '**')} title="Negrita (Ctrl+B)" theme={theme}>
         <BIcon />
       </ToolbarButton>
@@ -117,14 +125,16 @@ export function MarkdownToolbar({ textareaRef, onUpdate, theme }) {
 }
 
 
-function ToolbarButton({ onClick, children, title, theme }) {
+function ToolbarButton({ onClick, children, title, theme, disabled }) {
   const [showTooltip, setShowTooltip] = React.useState(false);
   const buttonRef = React.useRef(null);
   const [tooltipPos, setTooltipPos] = React.useState({ top: 0, left: 0 });
 
-  const btnClass = theme === 'dark'
-    ? 'text-slate-400 hover:text-emerald-400 hover:bg-emerald-500/10'
-    : 'text-slate-500 hover:text-emerald-600 hover:bg-emerald-50';
+  const btnClass = disabled
+    ? 'text-slate-300 cursor-not-allowed opacity-50'
+    : theme === 'dark'
+      ? 'text-slate-400 hover:text-emerald-400 hover:bg-emerald-500/10'
+      : 'text-slate-500 hover:text-emerald-600 hover:bg-emerald-50';
 
   const handleMouseEnter = () => {
     if (buttonRef.current) {
@@ -142,9 +152,10 @@ function ToolbarButton({ onClick, children, title, theme }) {
       <button
         ref={buttonRef}
         onClick={onClick}
+        disabled={disabled}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={() => setShowTooltip(false)}
-        className={`p-1.5 rounded-lg transition-colors ${btnClass}`}
+        className={`p-1.5 rounded-lg transition-colors shrink-0 ${btnClass}`}
       >
         {children}
       </button>
@@ -153,8 +164,8 @@ function ToolbarButton({ onClick, children, title, theme }) {
       {showTooltip && (
         <div
           className={`fixed px-2 py-1 text-xs rounded whitespace-nowrap pointer-events-none transition-opacity duration-200 z-[9999] -translate-x-1/2 ${theme === 'dark'
-              ? 'bg-slate-800 text-slate-200 border border-slate-700'
-              : 'bg-slate-700 text-white'
+            ? 'bg-slate-800 text-slate-200 border border-slate-700'
+            : 'bg-slate-700 text-white'
             }`}
           style={{ top: `${tooltipPos.top}px`, left: `${tooltipPos.left}px` }}
         >
@@ -171,6 +182,14 @@ function ToolbarButton({ onClick, children, title, theme }) {
 }
 
 // Iconos simples SVG
+const UndoIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M3 7v6h6"></path><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path></svg>
+);
+
+const RedoIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M21 7v6h-6"></path><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7"></path></svg>
+);
+
 const BIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path></svg>
 );

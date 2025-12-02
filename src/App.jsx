@@ -34,7 +34,15 @@ function App() {
   } = useNotes();
 
   const { theme, toggleTheme } = useTheme();
-  const { captureHistory, undo, redo, resetHistory } = useHistory();
+  const { captureHistory, undo, redo, resetHistory, canUndo, canRedo } = useHistory();
+
+  const handleUndo = () => {
+    undo((content) => updateContent(content, true));
+  };
+
+  const handleRedo = () => {
+    redo((content) => updateContent(content, true));
+  };
 
   // Derived state
   const current = notes.find((n) => n.id === currentId) || null;
@@ -52,6 +60,8 @@ function App() {
   const textareaRef = useRef(null);
   const searchInputRef = useRef(null);
   const fileInputRef = useRef(null);
+  const previewRef = useRef(null);
+  const isScrolling = useRef(false);
 
   // Modal State
   const [modalConfig, setModalConfig] = useState({
@@ -62,6 +72,81 @@ function App() {
     inputValue: '',
     message: ''
   });
+
+  // Resizer State
+  const [editorWidth, setEditorWidth] = useState(50); // percentage
+  const [isResizing, setIsResizing] = useState(false);
+
+  const startResizing = (e) => {
+    setIsResizing(true);
+  };
+
+  const stopResizing = () => {
+    setIsResizing(false);
+  };
+
+  const resize = (e) => {
+    if (isResizing) {
+      const newWidth = (e.clientX - 256) / (window.innerWidth - 256) * 100; // 256 is sidebar width
+      if (newWidth > 20 && newWidth < 80) {
+        setEditorWidth(newWidth);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (isResizing) {
+      window.addEventListener('mousemove', resize);
+      window.addEventListener('mouseup', stopResizing);
+    } else {
+      window.removeEventListener('mousemove', resize);
+      window.removeEventListener('mouseup', stopResizing);
+    }
+    return () => {
+      window.removeEventListener('mousemove', resize);
+      window.removeEventListener('mouseup', stopResizing);
+    };
+  }, [isResizing]);
+
+  // Synchronized Scrolling
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    const preview = previewRef.current;
+
+    if (!textarea || !preview) return;
+
+    const handleEditorScroll = () => {
+      if (isScrolling.current) return;
+      isScrolling.current = true;
+
+      const percentage = textarea.scrollTop / (textarea.scrollHeight - textarea.clientHeight);
+      preview.scrollTop = percentage * (preview.scrollHeight - preview.clientHeight);
+
+      setTimeout(() => {
+        isScrolling.current = false;
+      }, 50);
+    };
+
+    const handlePreviewScroll = () => {
+      if (isScrolling.current) return;
+      isScrolling.current = true;
+
+      const percentage = preview.scrollTop / (preview.scrollHeight - preview.clientHeight);
+      textarea.scrollTop = percentage * (textarea.scrollHeight - textarea.clientHeight);
+
+      setTimeout(() => {
+        isScrolling.current = false;
+      }, 50);
+    };
+
+    textarea.addEventListener('scroll', handleEditorScroll);
+    preview.addEventListener('scroll', handlePreviewScroll);
+
+    return () => {
+      textarea.removeEventListener('scroll', handleEditorScroll);
+      preview.removeEventListener('scroll', handlePreviewScroll);
+    };
+  }, []);
 
   // History management
   useEffect(() => {
@@ -260,20 +345,48 @@ function App() {
         />
 
         <main className="flex-1 flex flex-col min-w-0">
-          <div className="flex-1 flex overflow-hidden">
-            <Editor
-              content={current?.content ?? null}
-              updateContent={updateContent}
-              textareaRef={textareaRef}
-              theme={theme}
-              copied={copied}
-              handleCopyClick={handleCopyClick}
-            />
-            <Preview
-              content={current?.content}
-              title={current?.title}
-              theme={theme}
-            />
+          <div className="flex-1 flex overflow-hidden relative">
+            <div style={{ width: `${editorWidth}%` }} className="h-full">
+              <Editor
+                content={current?.content ?? null}
+                updateContent={updateContent}
+                textareaRef={textareaRef}
+                theme={theme}
+                copied={copied}
+                handleCopyClick={handleCopyClick}
+                onUndo={handleUndo}
+                onRedo={handleRedo}
+                canUndo={canUndo}
+                canRedo={canRedo}
+              />
+            </div>
+
+            {/* Resizer */}
+            <div
+              className="absolute top-0 bottom-0 w-4 -ml-2 cursor-col-resize z-50 flex items-center justify-center group"
+              style={{ left: `${editorWidth}%` }}
+              onMouseDown={startResizing}
+              onDoubleClick={() => setEditorWidth(50)}
+            >
+              {/* Visual Line (w-1) */}
+              <div className={`w-1 h-full flex items-center justify-center transition-colors 
+                ${isResizing ? 'bg-emerald-500/50' : 'group-hover:bg-emerald-500/50'}
+              `}>
+                {/* Pill */}
+                <div className={`w-0.5 h-8 rounded-full bg-slate-300 dark:bg-slate-600 transition-colors 
+                  ${isResizing ? 'bg-emerald-400' : 'group-hover:bg-emerald-400'}
+                `} />
+              </div>
+            </div>
+
+            <div style={{ width: `${100 - editorWidth}%` }} className="h-full">
+              <Preview
+                content={current?.content}
+                title={current?.title}
+                theme={theme}
+                previewRef={previewRef}
+              />
+            </div>
           </div>
 
           <footer
@@ -328,8 +441,8 @@ function App() {
               ref={inputRef}
               type="text"
               className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 ${theme === 'dark'
-                  ? 'bg-slate-800 border-slate-700 text-slate-100'
-                  : 'bg-white border-slate-300 text-slate-900'
+                ? 'bg-slate-800 border-slate-700 text-slate-100'
+                : 'bg-white border-slate-300 text-slate-900'
                 }`}
               value={modalConfig.inputValue}
               onChange={(e) =>
@@ -343,7 +456,7 @@ function App() {
           </div>
         )}
       </Modal>
-    </div>
+    </div >
   );
 }
 
