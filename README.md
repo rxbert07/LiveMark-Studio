@@ -183,11 +183,21 @@ livemark-studio/
 ├── public/              # Archivos estáticos
 ├── src/
 │   ├── components/      # Componentes React
+│   │   ├── DragOverlay.jsx        # Overlay para arrastrar y soltar
+│   │   ├── Editor.jsx             # Editor de texto Markdown
+│   │   ├── Header.jsx             # Encabezado de la aplicación
 │   │   ├── MarkdownToolbar.jsx    # Barra de herramientas de formato
-│   │   ├── ThemeToggle.jsx        # Toggle de tema claro/oscuro
-│   │   └── Modal.jsx              # Componente modal reutilizable
+│   │   ├── Modal.jsx              # Componente modal reutilizable
+│   │   ├── Preview.jsx            # Vista previa del Markdown renderizado
+│   │   ├── ShortcutsModal.jsx     # Modal de atajos de teclado
+│   │   ├── Sidebar.jsx            # Barra lateral con lista de notas
+│   │   └── ThemeToggle.jsx        # Toggle de tema claro/oscuro
 │   ├── hooks/           # Custom hooks
-│   │   └── useKeyboardShortcuts.js # Hook de atajos de teclado
+│   │   ├── useDragDrop.js         # Lógica de arrastrar y soltar
+│   │   ├── useHistory.js          # Historial de cambios (undo/redo)
+│   │   ├── useKeyboardShortcuts.js # Hook de atajos de teclado
+│   │   ├── useNotes.js            # Gestión del estado de las notas
+│   │   └── useTheme.js            # Gestión del tema (claro/oscuro)
 │   ├── App.jsx          # Componente principal
 │   ├── main.jsx         # Punto de entrada
 │   └── index.css        # Estilos globales

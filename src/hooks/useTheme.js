@@ -1,0 +1,19 @@
+import { useState, useEffect } from "react";
+
+export function useTheme() {
+    const [theme, setTheme] = useState(() => {
+        const savedTheme = localStorage.getItem('livemark-theme');
+        if (savedTheme) return savedTheme;
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    });
+
+    useEffect(() => {
+        localStorage.setItem('livemark-theme', theme);
+    }, [theme]);
+
+    const toggleTheme = () => {
+        setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+    };
+
+    return { theme, toggleTheme };
+}
