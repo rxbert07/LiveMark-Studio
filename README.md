@@ -26,7 +26,10 @@
 ### ✍️ Editor Markdown Completo
 - **Vista previa en tiempo real**: Renderizado instantáneo de Markdown mientras escribes
 - **Resaltado de sintaxis**: Soporte para múltiples lenguajes de programación con Highlight.js
-- **Barra de herramientas visual**: Botones interactivos para formato rápido (negrita, cursiva, encabezados, listas, etc.)
+- **Diagramas Mermaid**: Crea diagramas de flujo, secuencia, Gantt y más directamente en tus notas
+- **Fórmulas matemáticas**: Soporte para ecuaciones LaTeX con KaTeX (inline y en bloque)
+- **Tablas mejoradas**: Tablas Markdown con estilos profesionales y responsive
+- **Barra de herramientas visual**: Botones interactivos para formato rápido (negrita, cursiva, encabezados, listas, tablas, etc.)
 - **Tooltips informativos**: Cada botón muestra su atajo de teclado correspondiente
 
 ### ⌨️ Atajos de Teclado
@@ -34,7 +37,8 @@
 - `Ctrl+F`: Enfocar búsqueda
 - `Ctrl+B`: Aplicar negrita
 - `Ctrl+I`: Aplicar cursiva
-- `Ctrl+K`: Insertar enlace
+- `Ctrl+K`: Detener audio de Kanye (Easter Egg)
+- `Ctrl+U`: Insertar enlace
 - `Ctrl+/`: Mostrar ayuda de atajos
 
 ### 🎨 Temas Personalizables
@@ -64,6 +68,18 @@
 - **Contador de palabras y caracteres**: Estadísticas en tiempo real
 - **Interfaz responsive**: Diseño adaptable a diferentes tamaños de pantalla
 - **Sin dependencias de backend**: Funciona completamente en el navegador
+- **🎨 Easter Eggs**: ¡Activa el botón de estrella (⭐) en el sidebar y descubre sorpresas ocultas mientras escribes! Diviértete encontrándolos todos.
+
+### 🥚 Easter Eggs & Secretos
+LiveMark Studio esconde varias sorpresas divertidas para mejorar tu experiencia (o simplemente sacarte una sonrisa). Actívalas con el botón de estrella (⭐) en la barra lateral.
+
+**Funciones Ocultas:**
+- **Rainbow Text**: Escribe ciertas palabras mágicas para verlas brillar con colores.
+- **Flash Effect**: Un destello de luz al cambiar de tema oscuro a claro.
+- **Chinazo Detector**: Cuidado con lo que escribes... podrías invocar una sorpresa visual y auditiva. 🍆
+- **Kanye Mode**: Escribe `kanye` para recibir una bendición musical y visual. 🐻 (Usa `Ctrl+K` para detenerlo).
+
+¿Tienes ideas para nuevos Easter Eggs? ¡Nos encantaría verlos! Siéntete libre de contribuir con tus propias locuras y secretos al código.
 
 ---
 
@@ -133,7 +149,9 @@ npm run dev
 **Opción 2: Atajos de teclado**
 - `Ctrl+B`: **Negrita**
 - `Ctrl+I`: *Cursiva*
-- `Ctrl+K`: [Enlace](url)
+- `Ctrl+B`: **Negrita**
+- `Ctrl+I`: *Cursiva*
+- `Ctrl+U`: [Enlace](url)
 
 **Opción 3: Sintaxis Markdown manual**
 ```markdown
@@ -187,21 +205,11 @@ livemark-studio/
 ├── public/              # Archivos estáticos
 ├── src/
 │   ├── components/      # Componentes React
-│   │   ├── DragOverlay.jsx        # Overlay para arrastrar y soltar
-│   │   ├── Editor.jsx             # Editor de texto Markdown
-│   │   ├── Header.jsx             # Encabezado de la aplicación
 │   │   ├── MarkdownToolbar.jsx    # Barra de herramientas de formato
-│   │   ├── Modal.jsx              # Componente modal reutilizable
-│   │   ├── Preview.jsx            # Vista previa del Markdown renderizado
-│   │   ├── ShortcutsModal.jsx     # Modal de atajos de teclado
-│   │   ├── Sidebar.jsx            # Barra lateral con lista de notas
-│   │   └── ThemeToggle.jsx        # Toggle de tema claro/oscuro
+│   │   ├── ThemeToggle.jsx        # Toggle de tema claro/oscuro
+│   │   └── Modal.jsx              # Componente modal reutilizable
 │   ├── hooks/           # Custom hooks
-│   │   ├── useDragDrop.js         # Lógica de arrastrar y soltar
-│   │   ├── useHistory.js          # Historial de cambios (undo/redo)
-│   │   ├── useKeyboardShortcuts.js # Hook de atajos de teclado
-│   │   ├── useNotes.js            # Gestión del estado de las notas
-│   │   └── useTheme.js            # Gestión del tema (claro/oscuro)
+│   │   └── useKeyboardShortcuts.js # Hook de atajos de teclado
 │   ├── App.jsx          # Componente principal
 │   ├── main.jsx         # Punto de entrada
 │   └── index.css        # Estilos globales
@@ -225,6 +233,8 @@ livemark-studio/
 | **Highlight.js** | 11.11.1 | Resaltado de sintaxis |
 | **html2pdf.js** | 0.10.2 | Exportación a PDF |
 | **nanoid** | 5.0.9 | Generación de IDs únicos |
+| **Mermaid** | 11.4.1 | Diagramas y gráficos |
+| **KaTeX** | 0.16.11 | Renderizado de fórmulas matemáticas |
 
 ---
 

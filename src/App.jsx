@@ -55,13 +55,110 @@ function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showFlash, setShowFlash] = useState(false); // Estado para el efecto flash
+  const [showChinazo, setShowChinazo] = useState(false);
+  const [showKanye, setShowKanye] = useState(false); // Estado para el efecto chinazo
 
+  // Easter Eggs state with localStorage persistence
+  const [easterEggsEnabled, setEasterEggsEnabled] = useState(() => {
+    const saved = localStorage.getItem('livemark-easter-eggs');
+    return saved ? JSON.parse(saved) : true;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('livemark-easter-eggs', JSON.stringify(easterEggsEnabled));
+  }, [easterEggsEnabled]);
+
+  // Efecto flash al cambiar a tema claro (solo con Easter Eggs activado)
+  // Efecto flash al cambiar a tema claro (solo con Easter Eggs activado)
   // Refs
   const textareaRef = useRef(null);
   const searchInputRef = useRef(null);
   const fileInputRef = useRef(null);
+  const flashAudioRef = useRef(null); // Ref para audio de flash
+  const chinazioAudioRef = useRef(null); // Ref para audio de chinazo
+  const kanyeAudioRef = useRef(null); // Ref para audio de Kanye
   const previewRef = useRef(null);
   const isScrolling = useRef(false);
+  const prevThemeRef = useRef(theme); // Ref para trackear el tema anterior
+
+  // Efecto flash al cambiar a tema claro (solo con Easter Eggs activado)
+  useEffect(() => {
+    // Solo activar si:
+    // 1. Easter Eggs están activados
+    // 2. El tema actual es 'light'
+    // 3. El tema ANTERIOR era 'dark' (es decir, acabamos de cambiar)
+    if (easterEggsEnabled && theme === 'light' && prevThemeRef.current === 'dark') {
+      setShowFlash(true);
+      
+      // Reproducir audio light-mode
+      if (flashAudioRef.current) {
+        flashAudioRef.current.currentTime = 0;
+        flashAudioRef.current.play().catch(err => console.log('Flash audio prevented:', err));
+      }
+
+      // Ocultar el flash después de 7 segundos
+      const timer = setTimeout(() => {
+        setShowFlash(false);
+      }, 7000);
+      
+      // Actualizar tema anterior
+      prevThemeRef.current = theme;
+      
+      return () => clearTimeout(timer);
+    } else {
+      // Si no se cumple la condición de transición, asegurarnos de que el flash esté apagado
+      // y actualizar el tema anterior
+      if (theme !== prevThemeRef.current) {
+        prevThemeRef.current = theme;
+        setShowFlash(false);
+      }
+    }
+  }, [theme, easterEggsEnabled]);
+
+  // Chinazo Trigger
+  const handleChinazoTrigger = () => {
+    if (!easterEggsEnabled) return;
+    
+    setShowChinazo(true);
+    
+    // Reproducir audio chinazo
+    if (chinazioAudioRef.current) {
+      chinazioAudioRef.current.currentTime = 0;
+      chinazioAudioRef.current.play().catch(err => console.log('Chinazo audio prevented:', err));
+    }
+    
+    // Ocultar después de 4 segundos (2s fade in + 2s fade out)
+    setTimeout(() => {
+      setShowChinazo(false);
+    }, 4000);
+  };
+
+  // Kanye Trigger
+  const handleKanyeTrigger = () => {
+    if (!easterEggsEnabled) return;
+    
+    // Reproducir audio kanye
+    if (kanyeAudioRef.current) {
+      kanyeAudioRef.current.currentTime = 0;
+      kanyeAudioRef.current.play().catch(err => console.log('Kanye audio prevented:', err));
+    }
+
+    // Mostrar imagen
+    setShowKanye(true);
+    setTimeout(() => {
+      setShowKanye(false);
+    }, 4000);
+  };
+
+  // Stop Kanye
+  const handleStopKanye = () => {
+    if (kanyeAudioRef.current) {
+      kanyeAudioRef.current.pause();
+      kanyeAudioRef.current.currentTime = 0;
+    }
+    setShowKanye(false);
+  };
 
   // Modal State
   const [modalConfig, setModalConfig] = useState({
@@ -295,7 +392,10 @@ function App() {
     onSearchFocus: () => searchInputRef.current?.focus(),
     onBold: () => insertFormat('**', '**'),
     onItalic: () => insertFormat('*', '*'),
+    onBold: () => insertFormat('**', '**'),
+    onItalic: () => insertFormat('*', '*'),
     onLink: () => insertFormat('[', '](url)'),
+    onStopKanye: handleStopKanye,
     onShowShortcuts: () => setShowShortcuts(true)
   });
 
@@ -310,7 +410,7 @@ function App() {
 
   return (
     <div
-      className={`h-screen overflow-hidden flex flex-col relative transition-colors duration-200 ${theme} ${theme === 'dark'
+      className={`h-screen overflow-hidden flex flex-col relative transition-colors duration-200 ${theme} ${easterEggsEnabled ? 'easter-eggs-enabled' : ''} ${theme === 'dark'
         ? 'bg-slate-900 text-slate-100'
         : 'bg-slate-100 text-slate-900'
         }`}
@@ -318,6 +418,49 @@ function App() {
     >
       <ShortcutsModal isOpen={showShortcuts} onClose={() => setShowShortcuts(false)} theme={theme} />
       <DragOverlay isDragging={isDraggingFile} theme={theme} />
+
+      {/* Flash Effect - Overlay blanco que se desvanece */}
+      {showFlash && (
+        <div
+          className="fixed inset-0 bg-white pointer-events-none z-[9999]"
+          style={{
+            animation: 'flashFadeOut 7s ease-out forwards'
+          }}
+        />
+      )}
+      
+      {/* Chinazo Effect - Imagen centrada */}
+      {showChinazo && (
+        <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-[9999]">
+          <img 
+            src="/chinazo.png" 
+            alt="Chinazo" 
+            className="w-auto h-auto min-w-[80vw] min-h-[80vh] max-w-full max-h-full object-contain"
+            style={{
+              animation: 'chinazoFade 4s linear forwards'
+            }}
+          />
+        </div>
+      )}
+
+      {/* Kanye Overlay */}
+      {showKanye && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 pointer-events-none">
+          <img 
+            src="/kanye.png" 
+            alt="Kanye" 
+            className="w-auto h-auto min-w-[80vw] min-h-[80vh] max-w-full max-h-full object-contain"
+            style={{
+              animation: 'chinazoFade 4s linear forwards'
+            }}
+          />
+        </div>
+      )}
+      
+      {/* Audio oculto para efecto flash */}
+      <audio ref={flashAudioRef} src="/light-mode.mp3" preload="auto" />
+      <audio ref={chinazioAudioRef} src="/chinazo-sound.mp3" preload="auto" />
+      <audio ref={kanyeAudioRef} src="/kanye.mp3" preload="auto" />
 
       {/* Header removed */}
 
@@ -342,6 +485,8 @@ function App() {
           theme={theme}
           toggleTheme={toggleTheme}
           searchInputRef={searchInputRef}
+          easterEggsEnabled={easterEggsEnabled}
+          setEasterEggsEnabled={setEasterEggsEnabled}
         />
 
         <main className="flex-1 flex flex-col min-w-0">
@@ -368,13 +513,15 @@ function App() {
               onMouseDown={startResizing}
               onDoubleClick={() => setEditorWidth(50)}
             >
-              {/* Visual Line (w-1) */}
-              <div className={`w-1 h-full flex items-center justify-center transition-colors 
-                ${isResizing ? 'bg-emerald-500/50' : 'group-hover:bg-emerald-500/50'}
+              {/* Visual Line */}
+              <div className={`w-0.5 h-full flex items-center justify-center transition-colors duration-200
+                ${theme === 'dark' ? 'bg-slate-700 hover:bg-emerald-500/50' : 'bg-slate-300 hover:bg-emerald-500/50'}
+                ${isResizing ? '!bg-emerald-500' : ''}
               `}>
                 {/* Pill */}
-                <div className={`w-0.5 h-8 rounded-full bg-slate-300 dark:bg-slate-600 transition-colors 
-                  ${isResizing ? 'bg-emerald-400' : 'group-hover:bg-emerald-400'}
+                <div className={`w-1 h-8 rounded-full transition-colors duration-200
+                  ${theme === 'dark' ? 'bg-slate-600' : 'bg-slate-400'}
+                  ${isResizing || 'group-hover:bg-emerald-400'}
                 `} />
               </div>
             </div>
@@ -385,6 +532,9 @@ function App() {
                 title={current?.title}
                 theme={theme}
                 previewRef={previewRef}
+                easterEggsEnabled={easterEggsEnabled}
+                onChinazoTrigger={handleChinazoTrigger}
+                onKanyeTrigger={handleKanyeTrigger}
               />
             </div>
           </div>

@@ -3,20 +3,36 @@ import MarkdownIt from "markdown-it";
 import hljs from "highlight.js";
 import { html5Media } from "markdown-it-html5-media";
 import html2pdf from "html2pdf.js";
+import mermaid from "mermaid";
+import katex from "katex";
+import "katex/dist/katex.min.css";
+import markdownItKatex from "markdown-it-katex";
 
 const md = new MarkdownIt({
   breaks: true,
   linkify: true,
+  html: true,
 });
 
 md.use(html5Media);
+md.use(markdownItKatex);
 
-// Agregar soporte para resaltado de código
-md.renderer.rules.fence = (tokens, idx) => {
+// Agregar soporte para resaltado de código y diagramas Mermaid
+const defaultFence = md.renderer.rules.fence || function(tokens, idx, options, env, self) {
+  return self.renderToken(tokens, idx, options);
+};
+
+md.renderer.rules.fence = (tokens, idx, options, env, self) => {
   const token = tokens[idx];
   const code = token.content;
   const lang = token.info.trim();
 
+  // Mermaid diagrams
+  if (lang === 'mermaid') {
+    return `<div class="mermaid" style="white-space: pre-wrap">${md.utils.escapeHtml(code)}</div>`;
+  }
+
+  // Syntax highlighting
   if (lang && hljs.getLanguage(lang)) {
     try {
       const highlighted = hljs.highlight(code, { language: lang }).value;
@@ -34,12 +50,87 @@ md.renderer.rules.fence = (tokens, idx) => {
   `;
 };
 
-export function Preview({ content, title, theme, previewRef }) {
+// Custom Image Renderer to support YouTube embeds
+const defaultImageRenderer = md.renderer.rules.image || function(tokens, idx, options, env, self) {
+  return self.renderToken(tokens, idx, options);
+};
+
+md.renderer.rules.image = (tokens, idx, options, env, self) => {
+  const token = tokens[idx];
+  const src = token.attrGet('src');
+  const alt = token.content;
+  
+  if (src) {
+    // YouTube Detection
+    const youtubeMatch = src.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?]+)/);
+    if (youtubeMatch) {
+      const videoId = youtubeMatch[1];
+      return `
+        <div class="video-wrapper my-4 relative w-full" style="padding-bottom: 56.25%; height: 0;">
+          <iframe 
+            class="absolute top-0 left-0 w-full h-full rounded-lg shadow-lg"
+            src="https://www.youtube.com/embed/${videoId}" 
+            title="${alt || 'YouTube video player'}"
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+          </iframe>
+        </div>
+      `;
+    }
+  }
+
+  return defaultImageRenderer(tokens, idx, options, env, self);
+};
+
+// Función para aplicar efecto rainbow a palabras específicas
+const applyRainbowEffect = (html, enabled) => {
+  if (!enabled) return html;
+  
+  // Palabras que activan el efecto rainbow
+  const triggerWords = ['gai', 'gei', 'gey', 'gay', 'homo'];
+  
+  // Crear un patrón regex que busque estas palabras (case insensitive)
+  // Usamos word boundaries (\b) para evitar coincidencias parciales
+  const pattern = new RegExp(`\\b(${triggerWords.join('|')})\\b`, 'gi');
+  
+  // Reemplazar las palabras encontradas con un span que tenga la clase rainbow-text
+  // Evitamos reemplazar dentro de tags HTML usando un enfoque más seguro
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = html;
+  
+  // Función recursiva para procesar nodos de texto
+  const processTextNodes = (node) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const text = node.textContent;
+      if (pattern.test(text)) {
+        const span = document.createElement('span');
+        span.innerHTML = text.replace(pattern, '<span class="rainbow-text">$1</span>');
+        node.parentNode.replaceChild(span, node);
+        // Normalizar para combinar nodos de texto adyacentes
+        span.parentNode.normalize();
+      }
+    } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== 'CODE' && node.tagName !== 'PRE') {
+      // No procesar dentro de bloques de código
+      Array.from(node.childNodes).forEach(processTextNodes);
+    }
+  };
+  
+  processTextNodes(tempDiv);
+  return tempDiv.innerHTML;
+};
+
+
+export function Preview({ content, title, theme, previewRef, easterEggsEnabled, onChinazoTrigger, onKanyeTrigger }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [viewMode, setViewMode] = useState('full'); // 'full' | 'paper'
   const menuRef = useRef(null);
   const containerRef = useRef(null);
+  const contentRef = useRef(null); // Ref para el div de contenido (renderizado HTML)
+  const rainbowAudioRef = useRef(null); // Ref para el audio del efecto rainbow
+  const previousContentRef = useRef(''); // Ref para trackear contenido anterior
+
 
   // 🔹 Cerrar menú dropdown al hacer click fuera
   useEffect(() => {
@@ -73,6 +164,128 @@ export function Preview({ content, title, theme, previewRef }) {
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
+
+  // 🔹 Inicializar Mermaid con configuración de tema
+  useEffect(() => {
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: theme === 'dark' ? 'dark' : 'default',
+      securityLevel: 'loose',
+      fontFamily: 'inherit',
+    });
+  }, [theme]);
+
+  // 🔹 Actualizar HTML del preview manualmente (evita destruir SVGs de Mermaid)
+  useEffect(() => {
+    if (contentRef.current && content !== undefined) {
+      const renderedHtml = md.render(content || "");
+      const processedHtml = applyRainbowEffect(renderedHtml, easterEggsEnabled);
+      contentRef.current.innerHTML = processedHtml;
+      
+      if (easterEggsEnabled) {
+        // --- RAINBOW AUDIO LOGIC ---
+        // Función para contar cuántas palabras rainbow hay
+        const countRainbowWords = (html) => {
+          const matches = html.match(/class="rainbow-text"/g);
+          return matches ? matches.length : 0;
+        };
+        
+        // Contar palabras rainbow en contenido anterior y actual
+        const previousRendered = md.render(previousContentRef.current || "");
+        const previousProcessed = applyRainbowEffect(previousRendered, true);
+        const previousCount = countRainbowWords(previousProcessed);
+        const currentCount = countRainbowWords(processedHtml);
+        
+        // Reproducir audio si hay MÁS palabras rainbow que antes
+        if (currentCount > previousCount) {
+          setTimeout(() => {
+            if (rainbowAudioRef.current) {
+              rainbowAudioRef.current.currentTime = 0;
+              rainbowAudioRef.current.play().catch(err => {
+                console.log('Audio playback prevented by browser:', err);
+              });
+            }
+          }, 100);
+        }
+
+        // --- CHINAZO LOGIC ---
+        // Lista expandida de chinazos y groserías
+        const countChinazoWords = (text) => {
+          if (!text) return 0;
+          // Regex con todas las palabras trigger
+          const matches = text.match(/dick|pene|pipe|dildo|guebo|guevo|huevo|ñema|pito|bolas|boludo|pinga|verga|totón|chocha|cuca|papaya|bollo|güevo|mondongo|culo|culito|trasero|coño|carajo|mierda|joder|mamarracho|maldito|cabrón|desgraciado|mamón|mamona|idiota|imbécil|marico|marica|estúpido|baboso|bobo|gafo|pajúo|zángano|ladilla|mamahuevo|mojón|cagada|cagón|cagar|cagarte|pedo|mearse|meado|nigga|negro|nut|venirse|vengo|cum|cummear|cumear|leche/gi);
+          return matches ? matches.length : 0;
+        };
+
+        const prevChinazoCount = countChinazoWords(previousContentRef.current);
+        const currChinazoCount = countChinazoWords(content);
+
+        // Si hay más palabras chinazo que antes, activar trigger
+        if (currChinazoCount > prevChinazoCount && onChinazoTrigger) {
+          onChinazoTrigger();
+        }
+
+        // --- KANYE LOGIC ---
+        const countKanyeWords = (text) => {
+          if (!text) return 0;
+          const matches = text.match(/kanye/gi);
+          return matches ? matches.length : 0;
+        };
+
+        const prevKanyeCount = countKanyeWords(previousContentRef.current);
+        const currKanyeCount = countKanyeWords(content);
+
+        if (currKanyeCount > prevKanyeCount && onKanyeTrigger) {
+          onKanyeTrigger();
+        }
+      }
+      
+      // Actualizar el contenido anterior para la próxima comparación
+      previousContentRef.current = content || '';
+    }
+  }, [content, easterEggsEnabled, onChinazoTrigger, onKanyeTrigger]);
+
+  // 🔹 Renderizar diagramas Mermaid cuando cambia el contenido
+  useEffect(() => {
+    let timeoutId;
+    if (content) {
+      timeoutId = setTimeout(async () => {
+        try {
+          const mermaidDivs = document.querySelectorAll('.mermaid');
+          if (mermaidDivs.length > 0) {
+            await mermaid.run({
+              nodes: Array.from(mermaidDivs),
+              suppressErrors: true
+            });
+          }
+        } catch (err) {
+          console.error('Error rendering Mermaid diagrams:', err);
+        }
+      }, 300);
+    }
+    return () => clearTimeout(timeoutId);
+  }, [content]);
+
+  // 🔹 Re-renderizar Mermaid al cambiar tema (para actualizar colores)
+  useEffect(() => {
+    const mermaidDivs = document.querySelectorAll('.mermaid');
+    if (mermaidDivs.length > 0 && content && contentRef.current) {
+      const renderedHtml = md.render(content);
+      const processedHtml = applyRainbowEffect(renderedHtml, easterEggsEnabled);
+      contentRef.current.innerHTML = processedHtml;
+      setTimeout(async () => {
+        const freshNodes = document.querySelectorAll('.mermaid');
+        if (freshNodes.length > 0) {
+          try {
+            await mermaid.run({ nodes: Array.from(freshNodes), suppressErrors: true });
+          } catch (err) {
+            console.error('Error re-rendering Mermaid on theme change:', err);
+          }
+        }
+      }, 100);
+    }
+  }, [theme, easterEggsEnabled]);
+
 
   const toggleFullscreen = async () => {
     try {
@@ -353,14 +566,16 @@ ${body}
         ref={previewRef}
       >
         <div
+          ref={contentRef}
           className={`h-fit
             transition-all duration-300
             ${isFullscreen && viewMode === 'paper'
               ? `max-w-3xl w-full mx-auto shadow-2xl rounded-xl p-12 min-h-[calc(100vh-8rem)] ${theme === 'dark' ? 'bg-slate-900 border border-slate-800' : 'bg-white border border-slate-200'}`
               : 'w-full max-w-none h-fit'
             }
-            [&>h1]:text-3xl [&>h1]:font-bold [&>h1]:mb-4
-            [&>h2]:text-2xl [&>h2]:font-semibold [&>h2]:mt-4 [&>h2]:mb-2
+            [&>h1]:text-3xl [&>h1]:font-bold [&>h1]:mb-4 [&>h1]:border-b [&>h1]:pb-2
+            [&>h2]:text-2xl [&>h2]:font-semibold [&>h2]:mt-4 [&>h2]:mb-2 [&>h2]:border-b [&>h2]:pb-2
+            [&>h3]:border-b [&>h3]:pb-1
             [&>p]:mb-2
             [&>ul]:list-disc [&>ul]:pl-6 [&>ul>li]:mb-1
             [&>a]:text-emerald-400 [&>a]:underline
@@ -373,15 +588,21 @@ ${body}
             [&_code:not(pre_code)]:px-1 [&_code:not(pre_code)]:py-[.0625rem]
             [&_code:not(pre_code)]:rounded [&_code:not(pre_code)]:font-mono
 
+            [&_table]:w-full [&_table]:border-collapse [&_table]:my-4
+            [&_th]:border [&_th]:px-4 [&_th]:py-2 [&_th]:font-semibold [&_th]:text-left
+            [&_td]:border [&_td]:px-4 [&_td]:py-2
+
+            [&>blockquote]:border-l-4 [&>blockquote]:pl-4 [&>blockquote]:my-4 [&>blockquote]:italic
+
             ${theme === 'dark'
-              ? '[&>pre]:bg-slate-800 [&>pre]:border-slate-700 [&>pre_code]:text-slate-200 [&_code:not(pre_code)]:bg-slate-800'
-              : '[&>pre]:bg-slate-100 [&>pre]:border-slate-200 [&>pre_code]:text-slate-800 [&_code:not(pre_code)]:bg-slate-100'}
+              ? '[&>pre]:bg-slate-800 [&>pre]:border-slate-700 [&>pre_code]:text-slate-200 [&_code:not(pre_code)]:bg-slate-800 [&>h1]:border-slate-700 [&>h2]:border-slate-700 [&>h3]:border-slate-700 [&_th]:border-slate-700 [&_th]:bg-slate-800 [&_td]:border-slate-700 [&>blockquote]:border-slate-600 [&>blockquote]:text-slate-400'
+              : '[&>pre]:bg-slate-100 [&>pre]:border-slate-200 [&>pre_code]:text-slate-800 [&_code:not(pre_code)]:bg-slate-100 [&>h1]:border-slate-200 [&>h2]:border-slate-200 [&>h3]:border-slate-200 [&_th]:border-slate-200 [&_th]:bg-slate-50 [&_td]:border-slate-200 [&>blockquote]:border-slate-300 [&>blockquote]:text-slate-600'}
           `}
-          dangerouslySetInnerHTML={{
-            __html: md.render(content || ""),
-          }}
         />
       </div>
+
+      {/* Audio para efecto rainbow (oculto) */}
+      <audio ref={rainbowAudioRef} src="/rainbow-effect.mp3" preload="auto" />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { ThemeToggle } from "./ThemeToggle";
+import { EasterEggsToggle } from "./EasterEggsToggle";
 import logo from "../assets/logo.png";
 
 export function Sidebar({
@@ -20,8 +21,10 @@ export function Sidebar({
   clearSelection,
   reorderNotes,
   theme,
-  toggleTheme, // Add toggleTheme prop
-  searchInputRef // Accepted as prop
+  toggleTheme,
+  searchInputRef,
+  easterEggsEnabled,
+  setEasterEggsEnabled
 }) {
   const [draggedId, setDraggedId] = useState(null);
   const [dragOverId, setDragOverId] = useState(null);
@@ -69,6 +72,15 @@ export function Sidebar({
 
       {/* Header inside Sidebar */}
       <div className="px-4 pt-4 pb-2 flex items-center justify-between">
+        <h1 className={`font-semibold ${theme === 'dark' ? 'text-slate-100' : 'text-slate-800'}`}>LiveMark Studio</h1>
+        <div className="flex items-center gap-2">
+          <EasterEggsToggle 
+            enabled={easterEggsEnabled} 
+            onToggle={() => setEasterEggsEnabled(!easterEggsEnabled)} 
+            theme={theme} 
+          />
+          <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+        </div>
         <div className="flex items-center gap-2">
           <img src={logo} alt="LiveMark Studio Logo" className="w-6 h-6 object-contain" />
           <h1 className={`font-semibold ${theme === 'dark' ? 'text-slate-100' : 'text-slate-800'}`}>LiveMark Studio</h1>

@@ -11,7 +11,9 @@ import { useEffect } from 'react';
  * - Ctrl+F: Enfocar búsqueda
  * - Ctrl+B: Negrita (solo en editor)
  * - Ctrl+I: Cursiva (solo en editor)
- * - Ctrl+K: Insertar enlace (solo en editor)
+ * - Ctrl+I: Cursiva (solo en editor)
+ * - Ctrl+U: Insertar enlace (solo en editor)
+ * - Ctrl+K: Detener audio de Kanye
  * - Ctrl+/: Mostrar ayuda de atajos
  * 
  * @param {Object} handlers - Objeto con callbacks para cada atajo
@@ -21,6 +23,7 @@ import { useEffect } from 'react';
  * @param {Function} handlers.onBold - Callback para aplicar negrita
  * @param {Function} handlers.onItalic - Callback para aplicar cursiva
  * @param {Function} handlers.onLink - Callback para insertar enlace
+ * @param {Function} handlers.onStopKanye - Callback para detener audio de Kanye
  * @param {Function} handlers.onShowShortcuts - Callback para mostrar ayuda
  */
 
@@ -71,11 +74,16 @@ export function useKeyboardShortcuts(handlers) {
                         }
                         break;
 
-                    case 'k': // Link
+                    case 'u': // Link (Ctrl+U)
                         if (isEditor) {
                             e.preventDefault();
                             handlers.onLink?.();
                         }
+                        break;
+
+                    case 'k': // Stop Kanye (Ctrl+K)
+                        e.preventDefault();
+                        handlers.onStopKanye?.();
                         break;
 
                     case '/': // Ayuda / Shortcuts
