@@ -11,6 +11,7 @@ import markdownItKatex from "markdown-it-katex";
 const md = new MarkdownIt({
   breaks: true,
   linkify: true,
+  html: true,
 });
 
 md.use(html5Media);
@@ -47,6 +48,39 @@ md.renderer.rules.fence = (tokens, idx, options, env, self) => {
   return `
     <pre><code class="hljs">${md.utils.escapeHtml(code)}</code></pre>
   `;
+};
+
+// Custom Image Renderer to support YouTube embeds
+const defaultImageRenderer = md.renderer.rules.image || function(tokens, idx, options, env, self) {
+  return self.renderToken(tokens, idx, options);
+};
+
+md.renderer.rules.image = (tokens, idx, options, env, self) => {
+  const token = tokens[idx];
+  const src = token.attrGet('src');
+  const alt = token.content;
+  
+  if (src) {
+    // YouTube Detection
+    const youtubeMatch = src.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?]+)/);
+    if (youtubeMatch) {
+      const videoId = youtubeMatch[1];
+      return `
+        <div class="video-wrapper my-4 relative w-full" style="padding-bottom: 56.25%; height: 0;">
+          <iframe 
+            class="absolute top-0 left-0 w-full h-full rounded-lg shadow-lg"
+            src="https://www.youtube.com/embed/${videoId}" 
+            title="${alt || 'YouTube video player'}"
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+          </iframe>
+        </div>
+      `;
+    }
+  }
+
+  return defaultImageRenderer(tokens, idx, options, env, self);
 };
 
 // Función para aplicar efecto rainbow a palabras específicas
@@ -87,7 +121,7 @@ const applyRainbowEffect = (html, enabled) => {
 };
 
 
-export function Preview({ content, title, theme, previewRef, easterEggsEnabled, onChinazoTrigger }) {
+export function Preview({ content, title, theme, previewRef, easterEggsEnabled, onChinazoTrigger, onKanyeTrigger }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [viewMode, setViewMode] = useState('full'); // 'full' | 'paper'
@@ -175,12 +209,11 @@ export function Preview({ content, title, theme, previewRef, easterEggsEnabled, 
         }
 
         // --- CHINAZO LOGIC ---
-        // Palabras prohibidas: dick, pene, pipe, dildo, guebo, guevo, huevo
+        // Lista expandida de chinazos y groserías
         const countChinazoWords = (text) => {
           if (!text) return 0;
-          // Buscar palabras exactas o parciales? El usuario dijo "palabra dick o pene".
-          // Usaremos regex simple case-insensitive global
-          const matches = text.match(/dick|pene|pipe|dildo|guebo|guevo|huevo/gi);
+          // Regex con todas las palabras trigger
+          const matches = text.match(/dick|pene|pipe|dildo|guebo|guevo|huevo|ñema|pito|bolas|boludo|pinga|verga|totón|chocha|cuca|papaya|bollo|güevo|mondongo|culo|culito|trasero|coño|carajo|mierda|joder|mamarracho|maldito|cabrón|desgraciado|mamón|mamona|idiota|imbécil|marico|marica|estúpido|baboso|bobo|gafo|pajúo|zángano|ladilla|mamahuevo|mojón|cagada|cagón|cagar|cagarte|pedo|mearse|meado|nigga|negro|nut|venirse|vengo|cum|cummear|cumear|leche/gi);
           return matches ? matches.length : 0;
         };
 
@@ -191,12 +224,26 @@ export function Preview({ content, title, theme, previewRef, easterEggsEnabled, 
         if (currChinazoCount > prevChinazoCount && onChinazoTrigger) {
           onChinazoTrigger();
         }
+
+        // --- KANYE LOGIC ---
+        const countKanyeWords = (text) => {
+          if (!text) return 0;
+          const matches = text.match(/kanye/gi);
+          return matches ? matches.length : 0;
+        };
+
+        const prevKanyeCount = countKanyeWords(previousContentRef.current);
+        const currKanyeCount = countKanyeWords(content);
+
+        if (currKanyeCount > prevKanyeCount && onKanyeTrigger) {
+          onKanyeTrigger();
+        }
       }
       
       // Actualizar el contenido anterior para la próxima comparación
       previousContentRef.current = content || '';
     }
-  }, [content, easterEggsEnabled, onChinazoTrigger]);
+  }, [content, easterEggsEnabled, onChinazoTrigger, onKanyeTrigger]);
 
   // 🔹 Renderizar diagramas Mermaid cuando cambia el contenido
   useEffect(() => {

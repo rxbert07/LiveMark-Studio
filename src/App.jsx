@@ -56,7 +56,8 @@ function App() {
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showFlash, setShowFlash] = useState(false); // Estado para el efecto flash
-  const [showChinazo, setShowChinazo] = useState(false); // Estado para el efecto chinazo
+  const [showChinazo, setShowChinazo] = useState(false);
+  const [showKanye, setShowKanye] = useState(false); // Estado para el efecto chinazo
 
   // Easter Eggs state with localStorage persistence
   const [easterEggsEnabled, setEasterEggsEnabled] = useState(() => {
@@ -76,6 +77,7 @@ function App() {
   const fileInputRef = useRef(null);
   const flashAudioRef = useRef(null); // Ref para audio de flash
   const chinazioAudioRef = useRef(null); // Ref para audio de chinazo
+  const kanyeAudioRef = useRef(null); // Ref para audio de Kanye
   const previewRef = useRef(null);
   const isScrolling = useRef(false);
   const prevThemeRef = useRef(theme); // Ref para trackear el tema anterior
@@ -130,6 +132,32 @@ function App() {
     setTimeout(() => {
       setShowChinazo(false);
     }, 4000);
+  };
+
+  // Kanye Trigger
+  const handleKanyeTrigger = () => {
+    if (!easterEggsEnabled) return;
+    
+    // Reproducir audio kanye
+    if (kanyeAudioRef.current) {
+      kanyeAudioRef.current.currentTime = 0;
+      kanyeAudioRef.current.play().catch(err => console.log('Kanye audio prevented:', err));
+    }
+
+    // Mostrar imagen
+    setShowKanye(true);
+    setTimeout(() => {
+      setShowKanye(false);
+    }, 4000);
+  };
+
+  // Stop Kanye
+  const handleStopKanye = () => {
+    if (kanyeAudioRef.current) {
+      kanyeAudioRef.current.pause();
+      kanyeAudioRef.current.currentTime = 0;
+    }
+    setShowKanye(false);
   };
 
   // Modal State
@@ -364,7 +392,10 @@ function App() {
     onSearchFocus: () => searchInputRef.current?.focus(),
     onBold: () => insertFormat('**', '**'),
     onItalic: () => insertFormat('*', '*'),
+    onBold: () => insertFormat('**', '**'),
+    onItalic: () => insertFormat('*', '*'),
     onLink: () => insertFormat('[', '](url)'),
+    onStopKanye: handleStopKanye,
     onShowShortcuts: () => setShowShortcuts(true)
   });
 
@@ -404,7 +435,21 @@ function App() {
           <img 
             src="/chinazo.png" 
             alt="Chinazo" 
-            className="max-w-4xl max-h-[80vh] object-contain"
+            className="w-auto h-auto min-w-[80vw] min-h-[80vh] max-w-full max-h-full object-contain"
+            style={{
+              animation: 'chinazoFade 4s linear forwards'
+            }}
+          />
+        </div>
+      )}
+
+      {/* Kanye Overlay */}
+      {showKanye && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 pointer-events-none">
+          <img 
+            src="/kanye.png" 
+            alt="Kanye" 
+            className="w-auto h-auto min-w-[80vw] min-h-[80vh] max-w-full max-h-full object-contain"
             style={{
               animation: 'chinazoFade 4s linear forwards'
             }}
@@ -415,6 +460,7 @@ function App() {
       {/* Audio oculto para efecto flash */}
       <audio ref={flashAudioRef} src="/light-mode.mp3" preload="auto" />
       <audio ref={chinazioAudioRef} src="/chinazo-sound.mp3" preload="auto" />
+      <audio ref={kanyeAudioRef} src="/kanye.mp3" preload="auto" />
 
       {/* Header removed */}
 
@@ -488,6 +534,7 @@ function App() {
                 previewRef={previewRef}
                 easterEggsEnabled={easterEggsEnabled}
                 onChinazoTrigger={handleChinazoTrigger}
+                onKanyeTrigger={handleKanyeTrigger}
               />
             </div>
           </div>

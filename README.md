@@ -33,7 +33,8 @@
 - `Ctrl+F`: Enfocar búsqueda
 - `Ctrl+B`: Aplicar negrita
 - `Ctrl+I`: Aplicar cursiva
-- `Ctrl+K`: Insertar enlace
+- `Ctrl+K`: Detener audio de Kanye (Easter Egg)
+- `Ctrl+U`: Insertar enlace
 - `Ctrl+/`: Mostrar ayuda de atajos
 
 ### 🎨 Temas Personalizables
@@ -64,6 +65,17 @@
 - **Interfaz responsive**: Diseño adaptable a diferentes tamaños de pantalla
 - **Sin dependencias de backend**: Funciona completamente en el navegador
 - **🎨 Easter Eggs**: ¡Activa el botón de estrella (⭐) en el sidebar y descubre sorpresas ocultas mientras escribes! Diviértete encontrándolos todos.
+
+### 🥚 Easter Eggs & Secretos
+LiveMark Studio esconde varias sorpresas divertidas para mejorar tu experiencia (o simplemente sacarte una sonrisa). Actívalas con el botón de estrella (⭐) en la barra lateral.
+
+**Funciones Ocultas:**
+- **Rainbow Text**: Escribe ciertas palabras mágicas para verlas brillar con colores.
+- **Flash Effect**: Un destello de luz al cambiar de tema oscuro a claro.
+- **Chinazo Detector**: Cuidado con lo que escribes... podrías invocar una sorpresa visual y auditiva. 🍆
+- **Kanye Mode**: Escribe `kanye` para recibir una bendición musical y visual. 🐻 (Usa `Ctrl+K` para detenerlo).
+
+¿Tienes ideas para nuevos Easter Eggs? ¡Nos encantaría verlos! Siéntete libre de contribuir con tus propias locuras y secretos al código.
 
 ---
 
@@ -133,7 +145,9 @@ npm run dev
 **Opción 2: Atajos de teclado**
 - `Ctrl+B`: **Negrita**
 - `Ctrl+I`: *Cursiva*
-- `Ctrl+K`: [Enlace](url)
+- `Ctrl+B`: **Negrita**
+- `Ctrl+I`: *Cursiva*
+- `Ctrl+U`: [Enlace](url)
 
 **Opción 3: Sintaxis Markdown manual**
 ```markdown
