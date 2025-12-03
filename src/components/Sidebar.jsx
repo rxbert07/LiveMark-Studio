@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { ThemeToggle } from "./ThemeToggle";
 import { EasterEggsToggle } from "./EasterEggsToggle";
+import logo from "../assets/logo.png";
 
 export function Sidebar({
   notes,
@@ -80,6 +81,11 @@ export function Sidebar({
           />
           <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
         </div>
+        <div className="flex items-center gap-2">
+          <img src={logo} alt="LiveMark Studio Logo" className="w-6 h-6 object-contain" />
+          <h1 className={`font-semibold ${theme === 'dark' ? 'text-slate-100' : 'text-slate-800'}`}>LiveMark Studio</h1>
+        </div>
+        <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
       </div>
 
       <div className="px-4 py-4">
